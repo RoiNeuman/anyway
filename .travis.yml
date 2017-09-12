@@ -12,6 +12,7 @@ node_js:
 
 services:
   - postgresql
+  - rabbitmq
 
 sudo: false
 
@@ -23,6 +24,7 @@ before_script:
   - psql -c 'create database anyway;' -U postgres
   - export DATABASE_URL='postgresql://postgres@localhost/anyway'
   - ./main.py init_db
+  - celery worker -A anyway.clusters_calculator -D
 
 script:
   - pylint -j $(nproc) anyway tests
@@ -30,3 +32,5 @@ script:
   - ./main.py process_data
   - ./main.py import_united_data --light
   - pytest tests
+  - kill $(cat celeryd.pid)
+  - ANYWAY_DISABLE_CELERY=1 pytest tests/test_flask.py::test_clusters
