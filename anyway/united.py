@@ -11,7 +11,7 @@ from sqlalchemy import and_
 from .constants import CONST
 from .models import Marker
 from .utilities import init_flask
-from .import importmail
+from . import importmail
 
 from xml.dom import minidom
 
@@ -101,6 +101,7 @@ def accident_time_zone_adjustment(created):  # return accident time in UTC time
     # therefore in daylight_saving_time we deduct 3 hours from the local time and in winter clock 2 hours
     # [
 
+    import ipdb; ipdb.set_trace()
     accident_date = accident_date.replace(hour=accident_date.hour - TIME_ZONE)
 
     # if accident happend between april and september
@@ -286,12 +287,11 @@ def create_accidents(collection, file_location):
             created = parse_date(accident[csvmap["time"]])
             marker = {'id': accident[csvmap["id"]], 'latitude': accident[csvmap["lat"]],
                       'longitude': accident[csvmap["long"]], 'created': created, 'provider_code': PROVIDER_CODE,
-                      'title': unicode(accident[csvmap["type"]], encoding='utf-8')[:100],
-                      'address': unicode((accident[csvmap["street"]] + ' ' + accident[csvmap["city"]]),
-                                         encoding='utf-8'),
-                      'severity': 2 if u"קשה" in unicode(accident[csvmap["type"]], encoding='utf-8') else 3,
+                      'title': accident[csvmap["type"]][:100],
+                      'address': (accident[csvmap["street"]] + ' ' + accident[csvmap["city"]]),
+                      'severity': 2 if u"קשה" in accident[csvmap["type"]] else 3,
                       'locationAccuracy': 1, 'subtype': 21, 'type': CONST.MARKER_TYPE_ACCIDENT,
-                      'description': unicode(accident[csvmap["comment"]], encoding='utf-8'),
+                      'description': accident[csvmap["comment"]],
                       'weather': process_weather_data(collection, accident[csvmap["lat"]],
                                                       accident[csvmap["long"]])}
             if format_version == 0:

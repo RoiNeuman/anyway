@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import csv
-from StringIO import StringIO
+from io import StringIO
 import time
 
 import jinja2
@@ -115,8 +115,8 @@ def generate_csv(results):
             output.writeheader()
 
         row = {k: v.encode('utf8')
-        if type(v) is unicode else v
-               for k, v in serialized.iteritems()}
+        if type(v) is str else v
+               for k, v in serialized.items()}
         output.writerow(row)
         yield output_file.getvalue()
         output_file.truncate(0)
@@ -135,7 +135,7 @@ ARG_TYPES = {'ne_lat': (float, 32.072427482938345), 'ne_lng': (float, 34.7992896
              'per_page': (int, 0)}
 
 def get_kwargs():
-    kwargs = {arg: arg_type(request.values.get(arg, default_value)) for (arg, (arg_type, default_value)) in ARG_TYPES.iteritems()}
+    kwargs = {arg: arg_type(request.values.get(arg, default_value)) for (arg, (arg_type, default_value)) in ARG_TYPES.items()}
 
     if kwargs['age_groups']:
         try:
@@ -300,7 +300,7 @@ def post_handler(obj):
         db_session.commit()
         return jsonify(obj.serialize())
     except Exception as e:
-        logging.debug("could not handle a post for object:{0}, error:{1}".format(obj, e.message))
+        logging.debug("could not handle a post for object:{0}, error:{1}".format(obj, str(e)))
         return ""
 
 # Safely parsing an object
@@ -309,14 +309,14 @@ def parse_data(cls, data):
     try:
         return cls.parse(data) if data is not None else None
     except Exception as e:
-        logging.debug("Could not parse the requested data, for class:{0}, data:{1}. Error:{2}".format(cls, data, e.message))
+        logging.debug("Could not parse the requested data, for class:{0}, data:{1}. Error:{2}".format(cls, data, str(e)))
         return
 
 def get_json_object(request):
     try:
         return request.get_json(force=True)
     except Exception as e:
-        logging.debug("Could not get json from a request. request:{0}. Error:{1}".format(request, e.message))
+        logging.debug("Could not get json from a request. request:{0}. Error:{1}".format(request, str(e)))
         return
 
 def log_bad_request(request):
@@ -740,8 +740,9 @@ def read_dictionaries():
 
 
 def get_dict_file(directory):
-    for name, filename in lms_dict_files.iteritems():
-        files = filter(lambda path: filename.lower() in path.lower(), os.listdir(directory))
+    for name, filename in lms_dict_files.items():
+        files = [path for path in os.listdir(directory)
+                 if filename.lower() in path.lower()]
         amount = len(files)
         if amount == 0:
             raise ValueError("file not found: " + filename + " in directory " + directory)

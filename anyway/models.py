@@ -225,7 +225,7 @@ class Marker(MarkerMixin, Base): # TODO rename to AccidentMarker
                 "cross_location": self.cross_location,
                 "cross_direction": self.cross_direction,
             }
-            for name, value in optional.iteritems():
+            for name, value in optional.items():
                 if value != 0:
                     fields[name] = value
         return fields

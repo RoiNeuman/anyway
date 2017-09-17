@@ -235,8 +235,8 @@ _fields = {
     "ZURAT_ISHUV": "צורת יישוב"
 }
 
-_cities = list(csv.DictReader(open(os.path.join("static/data/cities.csv"))))
-_cities_names = {int(x[field_names.sign]): x[field_names.name].decode('cp1255') for x in _cities}
+_cities = list(csv.DictReader(open(os.path.join("static/data/cities.csv"), encoding="cp1255")))
+_cities_names = {int(x[field_names.sign]): x[field_names.name]for x in _cities}
 
 
 def get_field(field, value=None):

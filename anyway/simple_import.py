@@ -7,7 +7,7 @@ from .constants import CONST
 
 
 db_connection_string = os.environ.get('CLEARDB_DATABASE_URL')
-print "using connection string: %s"%db_connection_string
+print("using connection string: %s"%db_connection_string)
 engine = create_engine(db_connection_string, convert_unicode=True, echo=True)
 autocommit = False # Autocommit does not seem to work
 db_session = sessionmaker(autocommit=autocommit, autoflush=True, bind=engine)
